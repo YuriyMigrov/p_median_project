@@ -1,6 +1,8 @@
 import os
+import sys
 
 from lib.setup_logging import logging
+logging.getLogger("matplotlib").setLevel(logging.ERROR)
 from lib.adjacency_matrix import read_adjacency_matrix_excel
 from lib.needs_vector import read_needs_vector_excel
 from lib.matching import matching_adj_matrix_and_needs_vector
@@ -14,9 +16,15 @@ adjacency_matrix_file_name = 'adjacency_matrix.xlsx'
 needs_vector_file_name = 'needs_vector.xlsx'
 input_p_file_name = "input_p.json"
 
+
+if getattr(sys, 'frozen', False):
+    current_path = os.path.dirname(sys.executable)  # папка где лежит exe
+else:
+    current_path = os.path.dirname(os.path.abspath(__file__))
+
 #Пути до файлов
-CURRENT_PATH: str = os.path.dirname(__file__)
-INPUT_PATH = os.path.join(CURRENT_PATH, 'input')
+INPUT_PATH = os.path.join(current_path, 'input')
+
 INPUT_ADJ_FILE_NAME = os.path.join(INPUT_PATH, adjacency_matrix_file_name)
 INPUT_NV_FILE_NAME = os.path.join(INPUT_PATH, needs_vector_file_name)
 INPUT_P_FILE_NAME = os.path.join(INPUT_PATH, input_p_file_name)

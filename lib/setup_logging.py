@@ -1,11 +1,18 @@
 import logging
 import sys
 from datetime import datetime
-import os
 from typing import Optional
+from pathlib import Path
 
 
-def setup_logging(log_file: Optional[str] = None) -> logging.Logger:
+def get_base_path() -> Path:
+    """Определяет папку программы"""
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).parent
+    return Path(__file__).resolve().parent
+
+
+def setup_logging(log_file: Optional[Path] = None) -> logging.Logger:
     """
     Настройка системы логирования
 
@@ -16,14 +23,17 @@ def setup_logging(log_file: Optional[str] = None) -> logging.Logger:
         logger (logging.Logger): настроенный объект логгера
     """
 
-    if log_file is None:
-        if not os.path.exists('logs'):
-            os.makedirs('logs')
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        log_file = f"logs/adjacency_matrix_{timestamp}.log"
+    BASE_DIR = get_base_path()
+    logs_dir = BASE_DIR / "logs"
 
-    log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    date_format = '%Y-%m-%d %H:%M:%S'
+    logs_dir.mkdir(exist_ok=True)
+
+    if log_file is None:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        log_file = logs_dir / f"adjacency_matrix_{timestamp}.log"
+
+    log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    date_format = "%Y-%m-%d %H:%M:%S"
     
     logging.basicConfig(
         level=logging.INFO,
@@ -35,7 +45,7 @@ def setup_logging(log_file: Optional[str] = None) -> logging.Logger:
         ]
     )
 
-    logger = logging.getLogger('AdjacencyMatrix')
+    logger = logging.getLogger('PMedianProject')
     logger.info(f"Логирование настроено. Файл логов: {log_file}")
     
     return logger
